@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Phonebook } from './Phonebook';
 import { ContactsList } from './Contacts';
 import { GlobalStyle } from './GlobalStyle';
@@ -7,7 +7,10 @@ import data from './data.json';
 import { Filter } from './Filter';
 
 export const App = () => {
-  const [contacts, setContacts] = useState(data);
+  const [contacts, setContacts] = useState(() => {
+    const value = JSON.parse(localStorage.getItem('contacts'));
+    return value || data;
+  });
   const [filter, setFilter] = useState('');
 
   const addContact = newContact => {
@@ -28,44 +31,10 @@ export const App = () => {
     setFilter(e.currentTarget.value);
   };
 
-  // componentDidMount() {
-  //   const contacts = JSON.parse(localStorage.getItem('contacts'));
-  //   if (contacts?.length) {
-  //     this.setState({
-  //       contacts,
-  //     });
-  //   }
-  // }
+  useEffect(() => {
+    localStorage.setItem('contacts', JSON.stringify(contacts));
+  }, [contacts]);
 
-  // componentDidUpdate(_, prevState) {
-  //   const { contacts } = this.state;
-  //   if (prevState.contacts.length !== contacts.length) {
-  //     localStorage.setItem('contacts', JSON.stringify(contacts));
-  //   }
-  // }
-
-  // addContact = newContact => {
-  //   this.state.contacts.filter(contact => contact.name === newContact.name)
-  //     .length
-  //     ? alert(`${newContact.name} is already in contacts 👀`)
-  //     : this.setState(prevState => ({
-  //         contacts: [...prevState.contacts, newContact],
-  //       }));
-  // };
-
-  // onDelete = id => {
-  //   this.setState(prevState => {
-  //     return {
-  //       contacts: prevState.contacts.filter(contact => contact.id !== id),
-  //     };
-  //   });
-  // };
-
-  // onFilter = e => {
-  //   this.setState({ filter: e.currentTarget.value });
-  // };
-
-  // render() {
   const normalizedFilter = filter.toLocaleLowerCase();
 
   const filtredData = contacts.filter(({ name }) =>
